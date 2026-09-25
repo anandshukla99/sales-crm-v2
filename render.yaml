@@ -1,0 +1,39 @@
+# Render blueprint for the Express backend (the /backend folder).
+# In Render: New + → "Blueprint" → pick your repo → it reads this file.
+# The env vars marked `sync: false` are NOT stored here (they're secrets/host-specific) — Render will
+# prompt you to fill them in the dashboard. See DEPLOYMENT.md.
+services:
+  - type: web
+    name: sales-crm-api
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    # Runs migrations + seed (idempotent), then starts the API.
+    startCommand: npm run start:deploy
+    healthCheckPath: /api/health
+    envVars:
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_SSL
+        value: "true"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: "8h"
+      - key: SEED_ADMIN_EMAIL
+        sync: false
+      - key: SEED_ADMIN_PASSWORD
+        sync: false
+      - key: SEED_ADMIN_NAME
+        value: "Admin"
+      - key: SEED_ADMIN_BU
+        value: "signage"

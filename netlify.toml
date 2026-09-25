@@ -1,0 +1,39 @@
+# Netlify configuration — deploys the React frontend (in /frontend).
+# The Express backend (/backend) is NOT deployed here; it runs on a separate Node host (Render).
+# See DEPLOYMENT.md for the full walkthrough.
+
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "build"
+
+[build.environment]
+  # Serve assets from the site root.
+  PUBLIC_URL = "/"
+  # Call the API same-origin at "/api/..."; the proxy redirects below forward it to the backend,
+  # so there is no CORS and the backend URL is never exposed to the browser.
+  REACT_APP_API_BASE = ""
+  # CRA treats lint warnings as errors when CI is truthy; keep warnings non-fatal for the build.
+  CI = "false"
+  NODE_VERSION = "20"
+
+# --- Proxy the API and uploaded files to the backend (Render) -------------------------------------
+# IMPORTANT: after the backend is live, replace `REPLACE-WITH-YOUR-BACKEND.onrender.com` below with
+# your actual Render host (no https://, no trailing slash), then commit — Netlify redeploys.
+[[redirects]]
+  from = "/api/*"
+  to = "https://REPLACE-WITH-YOUR-BACKEND.onrender.com/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/uploads/*"
+  to = "https://REPLACE-WITH-YOUR-BACKEND.onrender.com/uploads/:splat"
+  status = 200
+  force = true
+
+# --- SPA fallback: every other route is handled client-side by React Router --------------------
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
